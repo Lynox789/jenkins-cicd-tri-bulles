@@ -1,0 +1,35 @@
+// Pipeline 3 : Production
+pipeline {
+    agent any
+    triggers { pollSCM('H/2 * * * *') }
+    environment {
+        PROD_DIR = "${env.HOME}/prod"      // dossier d'installation (ici /var/lib/jenkins/prod)
+    }
+    stages {
+        stage('Check out') {
+            steps { checkout scm }
+        }
+        stage('Compilation') {
+            steps { sh 'make' }
+        }
+        stage('Tests') {
+            steps { sh 'make test' }
+        }
+        stage('Exécution') {
+            steps { sh './tri_bulles 1000' }
+        }
+        stage('Publication') {
+            steps {
+                sh 'make clean'                          // repart d'un état propre
+                sh 'make'                                // recompilation propre
+                sh 'strip tri_bulles'                    // supprime la table des symboles
+                sh 'make install PREFIX=$PROD_DIR'       // installe dans $PROD_DIR/bin
+                sh '$PROD_DIR/bin/tri_bulles 1000'       // vérifie le binaire installé
+            }
+        }
+    }
+    post {
+        success { echo 'Pipeline Prod : SUCCESS' }
+        failure { echo 'Pipeline Prod : FAILURE' }
+    }
+}

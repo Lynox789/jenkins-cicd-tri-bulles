@@ -1,0 +1,38 @@
+// Pipeline 2 : Pré-production (profilage Valgrind)
+pipeline {
+    agent any
+    triggers { pollSCM('H/2 * * * *') }
+    stages {
+        stage('Check out') {
+            steps { checkout scm }
+        }
+        stage('Compilation') {
+            steps { sh 'make clean && make' }      // compilé avec -g -O0 : noms de fonctions visibles
+        }
+        stage('Tests') {
+            steps { sh 'make test' }
+        }
+        stage('Exécution') {
+            steps { sh './tri_bulles 1000' }
+        }
+        stage('Profilage') {
+            steps {
+                // 1. Memcheck : fuites et erreurs mémoire (échec du job si erreur)
+                sh 'valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all --track-origins=yes --error-exitcode=1 ./tri_bulles 1000'
+                // 2. Callgrind : temps (en instructions) passé dans chaque fonction => CPU
+                sh 'valgrind --tool=callgrind --callgrind-out-file=callgrind.out ./tri_bulles 1000'
+                sh 'callgrind_annotate callgrind.out > callgrind_rapport.txt'
+                // 3. Massif : consommation mémoire du tas au cours du temps => RAM
+                sh 'valgrind --tool=massif --massif-out-file=massif.out ./tri_bulles 1000'
+                sh 'ms_print massif.out > massif_rapport.txt'
+            }
+        }
+        stage('Publication') {
+            steps { archiveArtifacts artifacts: '*_rapport.txt, callgrind.out, massif.out', fingerprint: true }
+        }
+    }
+    post {
+        success { echo 'Pipeline Pré-prod : SUCCESS' }
+        failure { echo 'Pipeline Pré-prod : FAILURE' }
+    }
+}

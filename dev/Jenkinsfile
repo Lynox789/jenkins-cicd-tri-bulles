@@ -1,0 +1,26 @@
+// Pipeline 1 : Dev / Tests
+pipeline {
+    agent any
+    triggers { pollSCM('H/2 * * * *') }   // interroge GitHub toutes les ~2 min
+    stages {
+        stage('Check out') {
+            steps { checkout scm }
+        }
+        stage('Compilation') {
+            steps { sh 'make clean && make' }
+        }
+        stage('Tests') {
+            steps { sh 'make test' }          // code retour != 0 => job en échec (KO)
+        }
+        stage('Exécution') {
+            steps { sh './tri_bulles 1000' }
+        }
+        stage('Publication') {
+            steps { archiveArtifacts artifacts: 'tri_bulles', fingerprint: true }
+        }
+    }
+    post {
+        success { echo 'Pipeline Dev : SUCCESS' }
+        failure { echo 'Pipeline Dev : FAILURE' }
+    }
+}

@@ -1,0 +1,8 @@
+# binaires
+tri_bulles
+test_runner
+*.o
+# sorties de profilage
+callgrind.out*
+massif.out*
+*_rapport.txt
