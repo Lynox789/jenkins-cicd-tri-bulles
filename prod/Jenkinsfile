@@ -1,9 +1,9 @@
-// Pipeline 3 : Production
+//Pipeline 3 : Prod
 pipeline {
     agent any
     triggers { pollSCM('H/2 * * * *') }
     environment {
-        PROD_DIR = "${env.HOME}/prod"      // dossier d'installation (ici /var/lib/jenkins/prod)
+        PROD_DIR = "${env.HOME}/prod"
     }
     stages {
         stage('Check out') {

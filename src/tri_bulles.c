@@ -12,7 +12,7 @@ void tri_bulles(int tableau[], int taille) {
 
 int est_trie(const int tableau[], int taille) {
     for (int i = 0; i < taille - 1; i++)
-        if (tableau[i] < tableau[i + 1])
+        if (tableau[i] > tableau[i + 1])
             return 0;
     return 1;
 }
