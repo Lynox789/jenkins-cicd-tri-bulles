@@ -1,4 +1,4 @@
-// Pipeline 1 : Dev / Tests
+//Pipeline 1 : Dev / Tests
 pipeline {
     agent any
     triggers { pollSCM('H/2 * * * *') }   // interroge GitHub toutes les ~2 min
