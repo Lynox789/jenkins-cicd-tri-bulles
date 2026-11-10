@@ -16,3 +16,4 @@ int est_trie(const int tableau[], int taille) {
             return 0;
     return 1;
 }
+//test video
