@@ -40,6 +40,9 @@ int main(void) {
     tri_bulles(grand, 1000);
     VERIFIER(est_trie(grand, 1000), "1000 valeurs aleatoires");
 
+    //Simulation panne à décommenter pour effectuer la panne
+    // VERIFIER(1 == 2, "test impossible (panne simulee)");
+
     if (echecs) {
         printf("%d test(s) en echec\n", echecs);
         return 1;      /* code non nul => le build Jenkins passe en rouge */
