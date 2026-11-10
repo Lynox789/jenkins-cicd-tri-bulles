@@ -1,7 +1,10 @@
 //Pipeline 3 : Prod
 pipeline {
     agent any
-    triggers { pollSCM('H/2 * * * *') }
+    triggers {
+      upstream(upstreamProjects: 'tri-bulles-preprod',
+             threshold: hudson.model.Result.SUCCESS)
+    }
     environment {
         PROD_DIR = "${env.HOME}/prod"
     }

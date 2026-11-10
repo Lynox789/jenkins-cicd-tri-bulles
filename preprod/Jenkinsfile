@@ -1,7 +1,10 @@
 //Pipeline 2 : Pré-prod (profilage Valgrind)
 pipeline {
     agent any
-    triggers { pollSCM('H/2 * * * *') }
+    triggers {
+	upstream(upstreamProjects: 'tri-bulles-dev',
+             threshold: hudson.model.Result.SUCCESS)
+    }
     stages {
         stage('Check out') {
             steps { checkout scm }
